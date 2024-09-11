@@ -3,11 +3,14 @@ import { useLayout } from '@/layout/composables/layout';
 import { ProductService } from '@/service/ProductService';
 import { onMounted, ref, watch } from 'vue';
 
+import { getUser, getUsers } from '@/api/UserService';
+
 const { getPrimary, getSurface, isDarkTheme } = useLayout();
 
 const products = ref(null);
 const chartData = ref(null);
 const chartOptions = ref(null);
+const users = ref(null);
 
 const items = ref([
     { label: 'Add New', icon: 'pi pi-fw pi-plus' },
@@ -18,7 +21,19 @@ onMounted(() => {
     ProductService.getProductsSmall().then((data) => (products.value = data));
     chartData.value = setChartData();
     chartOptions.value = setChartOptions();
+    getUsers1();
+    // getUser1('66c8a06339f65430445e0407');
 });
+
+function getUser1(id) {
+    getUser(id);
+}
+
+function getUsers1() {
+    getUsers().then((data) => {
+        users.value = data.data;
+    });
+}
 
 function setChartData() {
     const documentStyle = getComputedStyle(document.documentElement);
@@ -101,6 +116,7 @@ watch([getPrimary, getSurface, isDarkTheme], () => {
 </script>
 
 <template>
+    {{ users }}
     <div class="grid grid-cols-12 gap-8">
         <div class="col-span-12 lg:col-span-6 xl:col-span-3">
             <div class="card mb-0">
@@ -166,17 +182,17 @@ watch([getPrimary, getSurface, isDarkTheme], () => {
         <div class="col-span-12 xl:col-span-6">
             <div class="card">
                 <div class="font-semibold text-xl mb-4">Recent Sales</div>
-                <DataTable :value="products" :rows="5" :paginator="true" responsiveLayout="scroll">
+                <DataTable :value="users" :rows="5" :paginator="true" responsiveLayout="scroll">
                     <Column style="width: 15%" header="Image">
                         <template #body="slotProps">
-                            <img :src="`https://primefaces.org/cdn/primevue/images/product/${slotProps.data.image}`" :alt="slotProps.data.image" width="50" class="shadow" />
+                            <img :src="slotProps.data.avatar" :alt="slotProps.data.image" width="50" class="shadow" />
                         </template>
                     </Column>
-                    <Column field="name" header="Name" :sortable="true" style="width: 35%"></Column>
-                    <Column field="price" header="Price" :sortable="true" style="width: 35%">
-                        <template #body="slotProps">
+                    <Column field="firstName" header="Name" :sortable="true" style="width: 35%"></Column>
+                    <Column field="lastName" header="Price" :sortable="true" style="width: 35%">
+                        <!-- <template #body="slotProps">
                             {{ formatCurrency(slotProps.data.price) }}
-                        </template>
+                        </template> -->
                     </Column>
                     <Column style="width: 15%" header="View">
                         <template #body>
@@ -342,3 +358,4 @@ watch([getPrimary, getSurface, isDarkTheme], () => {
         </div>
     </div>
 </template>
+@/api/UserService

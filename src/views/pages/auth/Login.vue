@@ -2,6 +2,24 @@
 import FloatingConfigurator from '@/components/FloatingConfigurator.vue';
 import { ref } from 'vue';
 
+import { login, register } from '@/api/AuthService';
+
+function onLogin() {
+    const payload = { email: email.value, password: password.value };
+    login(payload)
+        .then((response) => {
+            const token = response.data ? response.data.token : null;
+            localStorage.setItem('token', token);
+        })
+        .catch((error) => {
+            console.log(error);
+        });
+}
+
+function onRegister() {
+    register({ email: email.value, password: password.value });
+}
+
 const email = ref('');
 const password = ref('');
 const checked = ref(false);
@@ -49,7 +67,7 @@ const checked = ref(false);
                             </div>
                             <span class="font-medium no-underline ml-2 text-right cursor-pointer text-primary">Forgot password?</span>
                         </div>
-                        <Button label="Sign In" class="w-full" as="router-link" to="/"></Button>
+                        <Button label="Sign In" class="w-full" @click="onLogin"></Button>
                     </div>
                 </div>
             </div>
