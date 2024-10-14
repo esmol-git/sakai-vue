@@ -1,5 +1,5 @@
 <script setup>
-import { addFavorite, delFavorite, getFavorites, getProducts, updateProduct } from '@/api/ProductService';
+import { addFavorite, delFavorite, getFavorites, getProducts, updateProduct, updatedFavorites } from '@/api/ProductService';
 import { computed, onMounted, ref } from 'vue';
 
 const products = ref(null);
@@ -55,10 +55,18 @@ function fetchProducts() {
 function addFavoriteProduct(product) {
     const payload = {
         ...product,
-        favorite_id: product.id,
+        id: product.id,
         favorite: true
     };
-    addFavorite(payload).then(() => {
+    addFavorite(payload).then((response) => {
+        console.log('addFavoriteProduct', response.data);
+
+        const updatedFavorite = response.data;
+        const payload = {
+            ...product,
+            favorite_id: updatedFavorite.id
+        };
+        updatedFavorites(updatedFavorite.id, payload);
         isFavorite.value = true;
         updateProduct(product.id, payload).then(() => {
             product.favorite = true;
@@ -73,10 +81,11 @@ async function deleteFavoriteProduct(product) {
         favorite: false,
         favorite_id: null
     };
-    await delFavorite(product.id + 1).then(() => {
+    await delFavorite(product.favorite_id).then(() => {
         isFavorite.value = false;
         updateProduct(product.id, payload).then(() => {
             fetchProducts();
+            fetchFavorites();
         });
         console.log('deleteFavoriteProduct', product);
     });
@@ -164,11 +173,16 @@ function changeFavorite(product) {
                 </div>
             </div>
             <div id="hero">
-                {{ favorites }}
+                <p class="text-6xl font-bold text-surface-900 dark:text-surface-0 leading-tight">Favorites</p>
+                <div class="cards">
+                    <div class="border border-surface-200 dark:border-surface-700 rounded m-2 p-4" v-for="product in favorites">
+                        {{ product }}
+                    </div>
+                </div>
                 <div class="cards">
                     <div class="border border-surface-200 dark:border-surface-700 rounded m-2 p-4" v-for="product in products">
                         <div class="mb-4">
-                            {{ product }}
+                            <b>{{ product.id }}</b>
                             <div class="relative mx-auto">
                                 <img :src="'https://primefaces.org/cdn/primevue/images/product/' + product.image" :alt="product.name" class="w-full rounded h-40" />
                                 <div class="dark:bg-surface-900 absolute rounded-border" style="left: 5px; top: 5px">
