@@ -1,6 +1,6 @@
 <script setup>
 import { addFavorite, delFavorite, getProducts, updateProduct } from '@/api/ProductService';
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 
 const products = ref(null);
 const name = ref(null);
@@ -45,14 +45,15 @@ function fetchProducts() {
 }
 
 function addFavoriteProduct(product) {
-    product.favorite = true;
     const payload = {
         favorite: true
     };
     addFavorite(product).then(() => {
         isFavorite.value = true;
         updateProduct(product.id, payload).then(() => {
+            product.favorite = true;
             console.log('dd', product);
+            fetchProducts();
         });
         console.log('addFavoriteProduct', product);
     });
@@ -63,9 +64,11 @@ async function deleteFavoriteProduct(product) {
     const payload = {
         favorite: false
     };
-    await delFavorite(product).then(() => {
+    await delFavorite(product.id).then(() => {
         isFavorite.value = false;
-        updateProduct(product, payload).then(() => {});
+        updateProduct(product, payload).then(() => {
+            fetchProducts();
+        });
         console.log('deleteFavoriteProduct', product);
     });
 }
@@ -79,6 +82,14 @@ function changeFavorite(product) {
     }
     fetchProducts();
 }
+watch(
+    [name, category, inventoryStatus, rating, isFavorite],
+    () => {
+        fetchProducts();
+    },
+
+    { immediate: true }
+);
 </script>
 
 <template>
@@ -160,7 +171,12 @@ function changeFavorite(product) {
                             {{ product.favorite }}
                             <div class="mt-0 font-semibold text-xl">{{ product.price }}</div>
                             <span>
-                                <Button :icon="product.favorite ? 'pi pi-heart-fill' : 'pi pi-heart'" :severity="product.favorite ? secondary : primary" outlined @click="changeFavorite(product)" />
+                                <Button
+                                    :icon="product.favorite ? 'pi pi-heart-fill' : 'pi pi-heart'"
+                                    :severity="product.favorite ? secondary : primary"
+                                    outlined
+                                    @click="product.favorite ? deleteFavoriteProduct(product) : addFavoriteProduct(product)"
+                                />
                                 <Button icon="pi pi-shopping-cart" class="ml-2" />
                             </span>
                         </div>
