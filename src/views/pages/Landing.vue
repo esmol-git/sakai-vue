@@ -1,9 +1,83 @@
 <script setup>
+import { addFavorite, delFavorite, getProducts, updateProduct } from '@/api/ProductService';
+import { computed, onMounted, ref } from 'vue';
+
+const products = ref(null);
+const name = ref(null);
+const category = ref(null);
+const inventoryStatus = ref(null);
+const rating = ref(null);
+const isFavorite = ref(false);
 function smoothScroll(id) {
     document.body.click();
     document.querySelector(id).scrollIntoView({
         behavior: 'smooth'
     });
+}
+function getSeverity(status) {
+    switch (status) {
+        case 'INSTOCK':
+            return 'success';
+
+        case 'LOWSTOCK':
+            return 'warning';
+
+        case 'OUTOFSTOCK':
+            return 'danger';
+
+        default:
+            return null;
+    }
+}
+
+const favoriteClass = computed(() => {
+    return isFavorite.value ? 'pi pi-heart-fill' : 'pi pi-heart';
+});
+
+onMounted(() => {
+    fetchProducts();
+});
+
+function fetchProducts() {
+    getProducts({ name: name.value, category: category.value, inventoryStatus: inventoryStatus.value, rating: rating.value }).then((data) => {
+        products.value = data.data;
+    });
+}
+
+function addFavoriteProduct(product) {
+    product.favorite = true;
+    const payload = {
+        favorite: true
+    };
+    addFavorite(product).then(() => {
+        isFavorite.value = true;
+        updateProduct(product.id, payload).then(() => {
+            console.log('dd', product);
+        });
+        console.log('addFavoriteProduct', product);
+    });
+}
+async function deleteFavoriteProduct(product) {
+    console.log('dd', product);
+    product.favorite = false;
+    const payload = {
+        favorite: false
+    };
+    await delFavorite(product).then(() => {
+        isFavorite.value = false;
+        updateProduct(product, payload).then(() => {});
+        console.log('deleteFavoriteProduct', product);
+    });
+}
+function changeFavorite(product) {
+    if (!product) return;
+    const favorite = product ? product.favorite : null;
+    if (favorite === true) {
+        deleteFavoriteProduct(product.id);
+    } else {
+        addFavoriteProduct(product);
+    }
+    fetchProducts();
 }
 </script>
 
@@ -69,8 +143,34 @@ function smoothScroll(id) {
                     </div>
                 </div>
             </div>
-
-            <div
+            <div id="hero">
+                <div class="cards">
+                    <div class="border border-surface-200 dark:border-surface-700 rounded m-2 p-4" v-for="product in products">
+                        <div class="mb-4">
+                            {{ product }}
+                            <div class="relative mx-auto">
+                                <img :src="'https://primefaces.org/cdn/primevue/images/product/' + product.image" :alt="product.name" class="w-full rounded h-40" />
+                                <div class="dark:bg-surface-900 absolute rounded-border" style="left: 5px; top: 5px">
+                                    <Tag :value="product.inventoryStatus.label" :severity="getSeverity(products.inventoryStatus ? products.inventoryStatus : '')" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-4 font-medium">{{ product.name }}</div>
+                        <div class="flex justify-between items-center">
+                            {{ product.favorite }}
+                            <div class="mt-0 font-semibold text-xl">{{ product.price }}</div>
+                            <span>
+                                <Button :icon="product.favorite ? 'pi pi-heart-fill' : 'pi pi-heart'" :severity="product.favorite ? secondary : primary" outlined @click="changeFavorite(product)" />
+                                <Button icon="pi pi-shopping-cart" class="ml-2" />
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="features"></div>
+            <div id="highlights"></div>
+            <div id="pricing"></div>
+            <!-- <div
                 id="hero"
                 class="flex flex-col pt-6 px-6 lg:px-20 overflow-hidden"
                 style="background: linear-gradient(0deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.2)), radial-gradient(77.36% 256.97% at 77.36% 57.52%, rgb(238, 239, 175) 0%, rgb(195, 227, 250) 100%); clip-path: ellipse(150% 87% at 93% 13%)"
@@ -441,7 +541,7 @@ function smoothScroll(id) {
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> -->
         </div>
     </div>
 </template>

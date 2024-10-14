@@ -12,6 +12,9 @@ function fetchProducts() {
     const sortParam = sortField.value ? `${sortOrder.value === 1 ? '' : '-'}${sortField.value}` : null;
     getProducts({
         name: search.value,
+        category: selectCategory.value ? selectCategory.value.value : null,
+        inventoryStatus: selectStatus.value ? selectStatus.value.value : null,
+        rating: selectRating.value ? selectRating.value.value : null,
         limit: rowsPerPage.value,
         page: currentPage.value,
         sortBy: sortParam
@@ -65,11 +68,28 @@ const product = ref({});
 const selectedProducts = ref();
 const submitted = ref(false);
 const statuses = ref([
+    { label: 'Bce', value: null },
     { label: 'INSTOCK', value: 'instock' },
     { label: 'LOWSTOCK', value: 'lowstock' },
     { label: 'OUTOFSTOCK', value: 'outofstock' }
 ]);
-
+const categorys = ref([
+    { label: 'Bce', value: null },
+    { label: 'Accessories', value: 'Accessories' },
+    { label: 'Clothing', value: 'Clothing' },
+    { label: 'Electronics', value: 'Electronics' },
+    { label: 'Fitness', value: 'Fitness' }
+]);
+const ratings = ref([
+    { label: '★☆☆☆☆', value: 1 },
+    { label: '★★☆☆☆', value: 2 },
+    { label: '★★★☆☆', value: 3 },
+    { label: '★★★★☆', value: 4 },
+    { label: '★★★★★', value: 5 }
+]);
+const selectCategory = ref(null);
+const selectRating = ref(null);
+const selectStatus = ref(null);
 function formatCurrency(value) {
     if (value) return value.toLocaleString('ru-RU', { style: 'currency', currency: 'RUB' });
     return;
@@ -197,6 +217,26 @@ function searchProducts() {
 
                     <template #end>
                         <Button label="Export" icon="pi pi-upload" severity="secondary" @click="exportCSV($event)" />
+                    </template>
+                </Toolbar>
+                {{ selectStatus ? selectStatus.value : '' }}
+                <Toolbar class="mb-6">
+                    <template #start>
+                        <div class="grid grid-cols-12 gap-8">
+                            <div class="col-span-12">
+                                <Select v-model="selectCategory" :options="categorys" optionLabel="label" placeholder="Select One" @change="fetchProducts" class="w-full"></Select>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-12 gap-8">
+                            <div class="col-span-12">
+                                <Select v-model="selectStatus" :options="statuses" optionLabel="label" placeholder="Select One" @change="fetchProducts" class="w-full"></Select>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-12 gap-8">
+                            <div class="col-span-12">
+                                <Select v-model="selectRating" :options="ratings" optionLabel="label" placeholder="Select One" @change="fetchProducts" class="w-full"></Select>
+                            </div>
+                        </div>
                     </template>
                 </Toolbar>
 

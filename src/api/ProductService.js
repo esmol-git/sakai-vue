@@ -1,14 +1,25 @@
 import api from './api';
 
-const getProducts = ({ name, page, limit, sortBy }) => {
+const getProducts = ({ name, category, inventoryStatus, rating, page, limit, sortBy }) => {
     return api.get('/products', {
         params: {
-            name: '*' + name + '*',
+            name: name ? '*' + name + '*' : null,
+            category,
+            'inventoryStatus.value': inventoryStatus,
+            rating,
             page,
             limit,
             sortBy
         }
     });
+};
+
+const addFavorite = (data) => {
+    return api.post(`/favorites`, data);
+};
+
+const delFavorite = (id) => {
+    return api.delete(`/favorites/${id}`);
 };
 
 const getProduct = (id) => {
@@ -27,4 +38,4 @@ const delProduct = (id) => {
     return api.delete(`/products/${id}`);
 };
 
-export { createProduct, delProduct, getProduct, getProducts, updateProduct };
+export { createProduct, delProduct, getProduct, getProducts, updateProduct, addFavorite, delFavorite };

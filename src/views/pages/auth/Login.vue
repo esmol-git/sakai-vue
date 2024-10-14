@@ -1,8 +1,10 @@
 <script setup>
+import { login, register } from '@/api/AuthService';
 import FloatingConfigurator from '@/components/FloatingConfigurator.vue';
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 
-import { login, register } from '@/api/AuthService';
+const router = useRouter();
 
 function onLogin() {
     const payload = { email: email.value, password: password.value };
@@ -10,6 +12,7 @@ function onLogin() {
         .then((response) => {
             const token = response.data ? response.data.token : null;
             localStorage.setItem('token', token);
+            router.push({ name: 'dashboard' });
         })
         .catch((error) => {
             console.log(error);
