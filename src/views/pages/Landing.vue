@@ -1,6 +1,6 @@
 <script setup>
-import { addFavorite, delFavorite, getProducts, updateProduct } from '@/api/ProductService';
-import { computed, onMounted, ref, watch } from 'vue';
+import { addFavorite, delFavorite, getFavorites, getProducts, updateProduct } from '@/api/ProductService';
+import { computed, onMounted, ref } from 'vue';
 
 const products = ref(null);
 const name = ref(null);
@@ -34,8 +34,16 @@ const favoriteClass = computed(() => {
     return isFavorite.value ? 'pi pi-heart-fill' : 'pi pi-heart';
 });
 
+const favorites = ref([]);
+async function fetchFavorites() {
+    getFavorites().then((data) => {
+        favorites.value = data.data;
+    });
+}
+
 onMounted(() => {
     fetchProducts();
+    fetchFavorites();
 });
 
 function fetchProducts() {
@@ -46,27 +54,28 @@ function fetchProducts() {
 
 function addFavoriteProduct(product) {
     const payload = {
+        ...product,
+        favorite_id: product.id,
         favorite: true
     };
-    addFavorite(product).then(() => {
+    addFavorite(payload).then(() => {
         isFavorite.value = true;
         updateProduct(product.id, payload).then(() => {
             product.favorite = true;
-            console.log('dd', product);
             fetchProducts();
+            fetchFavorites();
         });
-        console.log('addFavoriteProduct', product);
     });
 }
 async function deleteFavoriteProduct(product) {
-    console.log('dd', product);
     product.favorite = false;
     const payload = {
-        favorite: false
+        favorite: false,
+        favorite_id: null
     };
-    await delFavorite(product.id).then(() => {
+    await delFavorite(product.id + 1).then(() => {
         isFavorite.value = false;
-        updateProduct(product, payload).then(() => {
+        updateProduct(product.id, payload).then(() => {
             fetchProducts();
         });
         console.log('deleteFavoriteProduct', product);
@@ -82,14 +91,14 @@ function changeFavorite(product) {
     }
     fetchProducts();
 }
-watch(
-    [name, category, inventoryStatus, rating, isFavorite],
-    () => {
-        fetchProducts();
-    },
+// watch(
+//     [name, category, inventoryStatus, rating, isFavorite],
+//     () => {
+//         fetchProducts();
+//     },
 
-    { immediate: true }
-);
+//     { immediate: true }
+// );
 </script>
 
 <template>
@@ -155,6 +164,7 @@ watch(
                 </div>
             </div>
             <div id="hero">
+                {{ favorites }}
                 <div class="cards">
                     <div class="border border-surface-200 dark:border-surface-700 rounded m-2 p-4" v-for="product in products">
                         <div class="mb-4">

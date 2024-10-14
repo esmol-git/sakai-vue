@@ -22,6 +22,10 @@ const delFavorite = (id) => {
     return api.delete(`/favorites/${id}`);
 };
 
+const getFavorites = () => {
+    return api.get(`/favorites`);
+};
+
 const getProduct = (id) => {
     return api.get(`/products/${id}`);
 };
@@ -38,4 +42,4 @@ const delProduct = (id) => {
     return api.delete(`/products/${id}`);
 };
 
-export { createProduct, delProduct, getProduct, getProducts, updateProduct, addFavorite, delFavorite };
+export { addFavorite, createProduct, delFavorite, delProduct, getFavorites, getProduct, getProducts, updateProduct };
