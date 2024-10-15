@@ -1,0 +1,47 @@
+<script setup>
+import { delFavorite, getFavorites } from '@/api/ProductService';
+import { onMounted, ref } from 'vue';
+
+const favorites = ref(null);
+
+const fetchFavorites = () => {
+    getFavorites().then((data) => {
+        favorites.value = data.data;
+    });
+};
+
+const deleteFavoriteProduct = (product) => {
+    console.log('deleteFavoriteProduct', product);
+    delFavorite(product.id).then(() => {
+        fetchFavorites();
+    });
+};
+
+onMounted(() => {
+    fetchFavorites();
+});
+</script>
+
+<template>
+    <div class="favorites bg-white">
+        <div class="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">
+            <div class="flex align-items-center justify-between">
+                <h2 class="text-4xl font-bold tracking-tight text-gray-900 mb-5">Favorites</h2>
+                <RouterLink to="/landing" class="text-2xl text-gray-500">назад</RouterLink>
+            </div>
+            <Divider />
+            <div class="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-8">
+                <a href="#" class="group border border-surface-200 rounded-lg relative" v-for="item in favorites">
+                    <div class="aspect-h-1 aspect-w-1 w-full overflow-hidden bg-gray-200 xl:aspect-h-8 xl:aspect-w-7">
+                        <img :src="'https://primefaces.org/cdn/primevue/images/product/' + item.image" :alt="item.name" class="h-full w-full object-cover object-center group-hover:opacity-75" />
+                        <Button class="absolute top-0 right-0" text icon="pi pi-heart-fill" severity="primary" outlined @click="deleteFavoriteProduct(item)" />
+                    </div>
+                    <h3 class="mt-4 text-sm text-gray-700">{{ item.name }}</h3>
+                    <p class="mt-1 text-lg font-medium text-gray-900">${{ item.price }}</p>
+                </a>
+            </div>
+        </div>
+    </div>
+</template>
+
+<style lang="scss" scoped></style>

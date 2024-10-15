@@ -1,5 +1,5 @@
 <script setup>
-import { addFavorite, delFavorite, getFavorites, getProducts, updateProduct, updatedFavorites } from '@/api/ProductService';
+import { addFavorite, addProductCart, delFavorite, getCart, getFavorites, getProducts, updateProduct } from '@/api/ProductService';
 import { computed, onMounted, ref } from 'vue';
 
 const products = ref(null);
@@ -8,6 +8,8 @@ const category = ref(null);
 const inventoryStatus = ref(null);
 const rating = ref(null);
 const isFavorite = ref(false);
+const cart = ref(null);
+const value = ref(0);
 function smoothScroll(id) {
     document.body.click();
     document.querySelector(id).scrollIntoView({
@@ -53,27 +55,30 @@ function fetchProducts() {
 }
 
 function addFavoriteProduct(product) {
-    const payload = {
+    const initialPayload = {
         ...product,
         id: product.id,
         favorite: true
     };
-    addFavorite(payload).then((response) => {
-        console.log('addFavoriteProduct', response.data);
-
-        const updatedFavorite = response.data;
-        const payload = {
-            ...product,
-            favorite_id: updatedFavorite.id
-        };
-        updatedFavorites(updatedFavorite.id, payload);
-        isFavorite.value = true;
-        updateProduct(product.id, payload).then(() => {
+    addFavorite(initialPayload)
+        .then((response) => {
+            const updatedFavorite = response.data;
+            const updatePayload = {
+                ...updatedFavorite,
+                favorite_id: updatedFavorite.id,
+                id: product.id
+            };
+            isFavorite.value = true;
+            return updateProduct(product.id, updatePayload);
+        })
+        .then(() => {
             product.favorite = true;
             fetchProducts();
             fetchFavorites();
+        })
+        .catch((error) => {
+            console.error('Ошибка при добавлении продукта в избранное:', error);
         });
-    });
 }
 async function deleteFavoriteProduct(product) {
     product.favorite = false;
@@ -90,24 +95,15 @@ async function deleteFavoriteProduct(product) {
         console.log('deleteFavoriteProduct', product);
     });
 }
-function changeFavorite(product) {
-    if (!product) return;
-    const favorite = product ? product.favorite : null;
-    if (favorite === true) {
-        deleteFavoriteProduct(product.id);
-    } else {
-        addFavoriteProduct(product);
-    }
-    fetchProducts();
+const fetchCart = () => {
+    getCart().then((data) => {
+        cart.value = data.data;
+    });
+};
+function addToCart(product) {
+    addProductCart(product).then(() => {});
+    fetchCart();
 }
-// watch(
-//     [name, category, inventoryStatus, rating, isFavorite],
-//     () => {
-//         fetchProducts();
-//     },
-
-//     { immediate: true }
-// );
 </script>
 
 <template>
@@ -151,9 +147,7 @@ function changeFavorite(product) {
                             </a>
                         </li>
                         <li>
-                            <a @click="smoothScroll('#features')" class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium text-xl">
-                                <span>Features</span>
-                            </a>
+                            <RouterLink to="/favorites" class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium text-xl">Favorites</RouterLink>
                         </li>
                         <li>
                             <a @click="smoothScroll('#highlights')" class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium text-xl">
@@ -173,9 +167,9 @@ function changeFavorite(product) {
                 </div>
             </div>
             <div id="hero">
-                <p class="text-6xl font-bold text-surface-900 dark:text-surface-0 leading-tight">Favorites</p>
+                <p class="text-6xl font-bold text-surface-900 dark:text-surface-0 leading-tight">Cart</p>
                 <div class="cards">
-                    <div class="border border-surface-200 dark:border-surface-700 rounded m-2 p-4" v-for="product in favorites">
+                    <div class="border border-surface-200 dark:border-surface-700 rounded m-2 p-4" v-for="product in cart">
                         {{ product }}
                     </div>
                 </div>
@@ -192,7 +186,7 @@ function changeFavorite(product) {
                         </div>
                         <div class="mb-4 font-medium">{{ product.name }}</div>
                         <div class="flex justify-between items-center">
-                            {{ product.favorite }}
+                            {{ product.favorite_id }}
                             <div class="mt-0 font-semibold text-xl">{{ product.price }}</div>
                             <span>
                                 <Button
@@ -201,7 +195,17 @@ function changeFavorite(product) {
                                     outlined
                                     @click="product.favorite ? deleteFavoriteProduct(product) : addFavoriteProduct(product)"
                                 />
-                                <Button icon="pi pi-shopping-cart" class="ml-2" />
+                                <Button @click="addToCart(product)" icon="pi pi-shopping-cart" class="ml-2" />
+                                <div>
+                                    <InputNumber v-model="product.value" readonly inputId="horizontal-buttons" showButtons buttonLayout="horizontal" :step="1">
+                                        <template #incrementbuttonicon>
+                                            <span @click="product.value++" class="pi pi-plus" />
+                                        </template>
+                                        <template #decrementbuttonicon>
+                                            <span @click="product.value--" class="pi pi-minus" />
+                                        </template>
+                                    </InputNumber>
+                                </div>
                             </span>
                         </div>
                     </div>
@@ -585,3 +589,10 @@ function changeFavorite(product) {
         </div>
     </div>
 </template>
+
+<style lang="scss" scoped>
+::v-deep .p-inputtext {
+    width: 50px;
+    text-align: center;
+}
+</style>

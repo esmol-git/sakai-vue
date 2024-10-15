@@ -46,4 +46,11 @@ const delProduct = (id) => {
     return api.delete(`/products/${id}`);
 };
 
-export { addFavorite, createProduct, delFavorite, delProduct, getFavorites, getProduct, getProducts, updateProduct, updatedFavorites };
+const addProductCart = (data) => {
+    return api.post('/cart', data);
+};
+const getCart = () => {
+    return api.get('/cart');
+};
+
+export { addFavorite, createProduct, delFavorite, delProduct, getFavorites, getProduct, getProducts, updateProduct, updatedFavorites, addProductCart, getCart };
