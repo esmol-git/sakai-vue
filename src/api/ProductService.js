@@ -52,5 +52,8 @@ const addProductCart = (data) => {
 const getCart = () => {
     return api.get('/cart');
 };
+const delCart = (id) => {
+    return api.delete(`/cart/${id}`);
+};
 
-export { addFavorite, createProduct, delFavorite, delProduct, getFavorites, getProduct, getProducts, updateProduct, updatedFavorites, addProductCart, getCart };
+export { addFavorite, addProductCart, createProduct, delCart, delFavorite, delProduct, getCart, getFavorites, getProduct, getProducts, updateProduct, updatedFavorites };

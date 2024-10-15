@@ -1,8 +1,8 @@
 <script setup>
-import { delFavorite, getFavorites } from '@/api/ProductService';
+import { delFavorite, getFavorites, updateProduct } from '@/api/ProductService';
 import { onMounted, ref } from 'vue';
 
-const favorites = ref(null);
+const favorites = ref([]);
 
 const fetchFavorites = () => {
     getFavorites().then((data) => {
@@ -11,9 +11,14 @@ const fetchFavorites = () => {
 };
 
 const deleteFavoriteProduct = (product) => {
-    console.log('deleteFavoriteProduct', product);
+    const payload = {
+        ...product,
+        favorite: false
+    };
     delFavorite(product.id).then(() => {
-        fetchFavorites();
+        updateProduct(product.favorite_id, payload).then(() => {
+            fetchFavorites();
+        });
     });
 };
 
@@ -30,7 +35,7 @@ onMounted(() => {
                 <RouterLink to="/landing" class="text-2xl text-gray-500">назад</RouterLink>
             </div>
             <Divider />
-            <div class="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-8">
+            <div v-if="favorites && favorites.length > 0" class="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-8">
                 <a href="#" class="group border border-surface-200 rounded-lg relative" v-for="item in favorites">
                     <div class="aspect-h-1 aspect-w-1 w-full overflow-hidden bg-gray-200 xl:aspect-h-8 xl:aspect-w-7">
                         <img :src="'https://primefaces.org/cdn/primevue/images/product/' + item.image" :alt="item.name" class="h-full w-full object-cover object-center group-hover:opacity-75" />
@@ -38,8 +43,10 @@ onMounted(() => {
                     </div>
                     <h3 class="mt-4 text-sm text-gray-700">{{ item.name }}</h3>
                     <p class="mt-1 text-lg font-medium text-gray-900">${{ item.price }}</p>
+                    id:{{ item.id }} - favorite_id:{{ item.favorite_id }}
                 </a>
             </div>
+            <div v-else class="text-center">No favorites yet</div>
         </div>
     </div>
 </template>
