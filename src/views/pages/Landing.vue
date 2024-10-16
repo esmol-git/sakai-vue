@@ -111,6 +111,7 @@ const addToCart = async (product) => {
         updateProduct(product.id, payload).then(() => {
             fetchCart();
             fetchProducts();
+            isCart.value = true;
         });
     });
 };
@@ -118,7 +119,8 @@ const deleteCartProduct = async (product) => {
     const id = product.product_id;
     const payload = {
         ...product,
-        product_id: null
+        product_id: null,
+        id: product.product_id
     };
     await delCart(product.id).then(() => {
         updateProduct(id, payload).then(() => {
@@ -127,6 +129,9 @@ const deleteCartProduct = async (product) => {
         });
     });
 };
+const cartSubtotal = computed(() => {
+    return cart.value.reduce((acc, item) => acc + item.price, 0);
+});
 const productCounts = computed(() => {
     const countMap = cart.value.reduce((acc, item) => {
         acc[item.product_id] = (acc[item.product_id] || 0) + 1;
@@ -138,6 +143,7 @@ const productCounts = computed(() => {
         quantity
     }));
 });
+const isCart = ref(false);
 </script>
 
 <template>
@@ -156,7 +162,7 @@ const productCounts = computed(() => {
                 >
                     <i class="pi pi-bars !text-2xl"></i>
                 </Button>
-                <div class="items-center bg-surface-0 dark:bg-surface-900 grow justify-between hidden lg:flex absolute lg:static w-full left-0 top-full px-12 lg:px-0 z-20 rounded-border">
+                <div class="items-center bg-surface-0 dark:bg-surface-900 grow justify-between hidden lg:flex absolute lg:static w-full left-0 top-full px-12 lg:px-0 z-10 rounded-border">
                     <ul class="list-none p-0 m-0 flex lg:items-center select-none flex-col lg:flex-row cursor-pointer gap-8">
                         <li>
                             <a @click="smoothScroll('#hero')" class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium text-xl">
@@ -180,17 +186,11 @@ const productCounts = computed(() => {
                     <div class="flex border-t lg:border-t-0 border-surface py-4 lg:py-0 mt-4 lg:mt-0 gap-2">
                         <Button label="Login" text as="router-link" to="/auth/login" rounded></Button>
                         <Button label="Register" to="/auth/login" rounded></Button>
+                        <Button @click="isCart = !isCart" icon="pi pi-shopping-cart" severity="secondary" rounded></Button>
                     </div>
                 </div>
             </div>
             <div id="hero">
-                <p class="text-6xl font-bold text-surface-900 dark:text-surface-0 leading-tight">Cart</p>
-                <div class="cards">
-                    <div class="border border-surface-200 dark:border-surface-700 rounded m-2 p-4" v-for="item in cart">
-                        {{ item }}
-                        <p @click="deleteCartProduct(item)" class="text-6xl font-bold text-surface-900 dark:text-surface-0 leading-tight">del</p>
-                    </div>
-                </div>
                 <div class="cards">
                     <div class="border border-surface-200 dark:border-surface-700 rounded m-2 p-4" v-for="product in products">
                         <div class="mb-4">
@@ -234,6 +234,79 @@ const productCounts = computed(() => {
             <div id="features"></div>
             <div id="highlights"></div>
             <div id="pricing"></div>
+            <div v-if="isCart" class="relative z-40" aria-labelledby="slide-over-title" role="dialog" aria-modal="true">
+                <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+                <div @click="isCart = false" class="fixed inset-0 overflow-hidden">
+                    <div class="absolute inset-0 overflow-hidden">
+                        <div class="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pl-10">
+                            <div class="pointer-events-auto w-screen max-w-md">
+                                <div class="flex h-full flex-col overflow-y-scroll bg-white shadow-xl z-40">
+                                    <div class="flex-1 overflow-y-auto px-4 py-6 sm:px-6">
+                                        <div class="flex items-start justify-between">
+                                            <h2 class="text-lg font-medium text-gray-900" id="slide-over-title">Shopping cart</h2>
+                                            <div class="ml-3 flex h-7 items-center">
+                                                <button @click="isCart = false" type="button" class="relative -m-2 p-2 text-gray-400 hover:text-gray-500">
+                                                    <span class="absolute -inset-0.5"></span>
+                                                    <span class="sr-only">Close panel</span>
+                                                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <div class="mt-8">
+                                            <div class="flow-root">
+                                                <ul role="list" class="-my-6 divide-y divide-gray-200">
+                                                    <li class="flex py-6" v-for="product in cart">
+                                                        <div class="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
+                                                            <img
+                                                                src="https://tailwindui.com/plus/img/ecommerce-images/shopping-cart-page-04-product-01.jpg"
+                                                                alt="Salmon orange fabric pouch with match zipper, gray zipper pull, and adjustable hip belt."
+                                                                class="h-full w-full object-cover object-center"
+                                                            />
+                                                        </div>
+
+                                                        <div class="ml-4 flex flex-1 flex-col">
+                                                            <div>
+                                                                <div class="flex justify-between text-base font-medium text-gray-900">
+                                                                    <h3>
+                                                                        <a href="#">{{ product.name }}</a>
+                                                                    </h3>
+                                                                    <p class="ml-4">{{ product.price }}</p>
+                                                                </div>
+                                                                <p class="mt-1 text-sm text-gray-500">{{ product.description }}</p>
+                                                            </div>
+                                                            <div class="flex flex-1 items-end justify-between text-sm">
+                                                                <p class="text-gray-500">Qty 1</p>
+
+                                                                <div class="flex">
+                                                                    <button @click.stop="deleteCartProduct(product)" type="button" class="font-medium text-indigo-600 hover:text-indigo-500">Remove</button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="border-t border-gray-200 px-4 py-6 sm:px-6">
+                                        <div class="flex justify-between text-base font-medium text-gray-900">
+                                            <p>Subtotal</p>
+                                            <p>${{ cartSubtotal }}</p>
+                                        </div>
+                                        <p class="mt-0.5 text-sm text-gray-500">Shipping and taxes calculated at checkout.</p>
+                                        <div class="mt-6">
+                                            <a href="#" class="flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700">Checkout</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <!-- <div
                 id="hero"
                 class="flex flex-col pt-6 px-6 lg:px-20 overflow-hidden"
