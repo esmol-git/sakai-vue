@@ -1,8 +1,5 @@
 <script setup>
-const types = {
-    one: 'one',
-    two: 'two'
-}
+import { computed } from 'vue';
 const props = defineProps({
     product: {
         type: Object,
@@ -12,6 +9,15 @@ const props = defineProps({
         type: Boolean,
         default: false
     },
+    variant: {
+    type: String,
+    default: 'default',
+    validator: value => ['default', 'compact', 'detailed'].includes(value)
+    },
+    status: {
+        type: String,
+        default: ''
+    }
 });
 
 const buttons = [
@@ -38,13 +44,29 @@ const buttons = [
     }
 ]
 
+const statusClasses = computed(() => {
+  switch (props.status) {
+    case 'new':
+      return 'bg-red-500';
+    case 'sale':
+      return 'bg-green-500';
+    case 'out-of-stock':
+      return 'bg-gray-500';
+    default:
+      return '';
+  }
+});
+
 </script>
 
 <template>
     <div @click="showDetails" class="card max-w-sm min-h-[350px] overflow-hidden shadow-lg bg-white flex flex-col relative cursor-pointer transition-transform transform rounded-lg" :class="cardScale ? 'hover:scale-105' : ''">
-        <div  class="absolute z-10 top-0 left-0 m-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
-            Новинка
-        </div>
+        <div
+            v-if="props.status"
+            :class="`absolute z-10 top-0 left-0 m-2 text-white text-xs font-bold px-2 py-1 rounded ${statusClasses}`"
+        >
+            {{ props.status === 'new' ? 'Новинка' : props.status === 'sale' ? 'Скидка' : 'Нет в наличии' }}
+         </div>
 
         <div class="relative h-48 bg-gray-200 flex items-center justify-center">
             <img v-if="product.image" :src="'https://primefaces.org/cdn/primevue/images/product/' + product.image" :alt="product.name">
@@ -71,16 +93,13 @@ const buttons = [
                 :aria-label="button.label"
                 style="background-color: white; color: black;"
             />
-            <Button icon="pi pi-shopping-cart" severity="secondary" raised rounded aria-label="Favorite" />
-            <Button icon="pi pi-refresh" severity="secondary" raised rounded aria-label="Favorite" />
-            <Button icon="pi pi-eye" severity="secondary" raised rounded aria-label="Favorite" />
         </div>
 
         <div class="px-6 py-4 flex-grow">
             <h3 class="text-lg font-bold text-gray-800">{{ product.name }}</h3>
-            <p class="text-sm text-gray-600">Подзаголовок</p>
+            <p class="text-sm text-gray-600">{{ product.description }}</p>
             <div class="flex items-center mt-2">
-                <span class="text-xl font-bold text-gray-800">$50.00</span>
+                <span class="text-xl font-bold text-gray-800">${{ product.price }}</span>
                 <span class="ml-2 text-sm line-through text-gray-500">$70.00</span>
             </div>
             <div class="flex items-center mt-2">
@@ -93,12 +112,8 @@ const buttons = [
         </div>
 
         <div class="px-6 py-4 flex items-center">
-            <button class="flex justify-center items-center border border-blue-500 text-blue-500 font-bold py-2 px-4 rounded h-10">
-                <i class="pi pi-shopping-cart"></i>
-            </button>
-            <button class="flex-grow bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ml-2 h-10">
-                Купить сейчас
-            </button>
+            <Button class="flex justify-center rounded h-12" icon="pi pi-shopping-cart"/>
+            <Button class="flex-grow py-2 px-4 rounded ml-2 h-12" label="Купить сейчас"/>
         </div>
     </div>
 </template>

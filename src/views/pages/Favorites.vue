@@ -52,7 +52,7 @@ onMounted(() => {
                     v-for="item in favorites"
                     :key="item.id"
                     :product="item"
-                    :variant="{ two: 'two'}"
+                    variant="detailed"
                 />
             </div>
         </div>

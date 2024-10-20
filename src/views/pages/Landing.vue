@@ -192,6 +192,12 @@ const isCart = ref(false);
             </div>
             <div id="hero">
                 <div class="cards">
+                    <CardProduct
+                        v-for="item in products"
+                        :key="item.id"
+                        :product="item"
+                        variant="detailed"
+                    />
                     <div class="border border-surface-200 dark:border-surface-700 rounded m-2 p-4" v-for="product in products">
                         <div class="mb-4">
                             <b>{{ product.id }}</b>
