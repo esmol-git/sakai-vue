@@ -47,52 +47,16 @@ onMounted(() => {
                 </a>
             </div>
             <div v-else class="text-center">No favorites yet</div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                <CardProduct
+                    v-for="item in favorites"
+                    :key="item.id"
+                    :product="item"
+                    :variant="{ two: 'two'}"
+                />
+            </div>
         </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            <div @click="showDetails" class="max-w-sm min-h-[350px] rounded overflow-hidden shadow-lg bg-white flex flex-col relative cursor-pointer transition-transform transform hover:scale-105">
-      <!-- Тег "Новинка" -->
-      <div class="absolute z-10 top-0 left-0 m-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
-        Новинка
-      </div>
-      
-      <div class="relative h-48 bg-gray-200 flex items-center justify-center">
-        <img class="w-full h-full object-cover" src="https://via.placeholder.com/400x300" alt="Product Image" />
-        <div class="absolute top-0 right-0 m-2">
-          <i
-            :class="isFavorite ? 'pi pi-heart-fill text-red-500' : 'pi pi-heart text-gray-500'"
-            class="text-xl cursor-pointer heart-animation"
-            @click.stop="toggleFavorite"
-          ></i>
-        </div>
-      </div>
-      
-      <div class="px-6 py-4 flex-grow">
-        <h3 class="text-lg font-bold text-gray-800">Название товара</h3>
-        <p class="text-sm text-gray-600">Подзаголовок</p>
-        <div class="flex items-center mt-2">
-          <span class="text-xl font-bold text-gray-800">$50.00</span>
-          <span class="ml-2 text-sm line-through text-gray-500">$70.00</span>
-        </div>
-        <div class="flex items-center mt-2">
-          <i class="pi pi-star text-yellow-400"></i>
-          <i class="pi pi-star text-yellow-400"></i>
-          <i class="pi pi-star text-yellow-400"></i>
-          <i class="pi pi-star text-yellow-400"></i>
-          <i class="pi pi-star-half text-yellow-400"></i>
-          <span class="ml-2 text-sm text-gray-600">(124 отзыва)</span>
-        </div>
-      </div>
-      
-      <div class="px-6 py-4 flex items-center">
-        <button class="flex justify-center items-center border border-blue-500 text-blue-500 font-bold py-2 px-4 rounded h-10">
-          <i class="pi pi-shopping-cart"></i>
-        </button>
-        <button class="flex-grow bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ml-2 h-10">
-          Купить сейчас
-        </button>
-      </div>
-    </div>
-        </div>
+
     </div>
 </template>
 
