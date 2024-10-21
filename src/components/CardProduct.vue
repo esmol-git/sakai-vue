@@ -1,4 +1,5 @@
 <script setup>
+import Image from 'primevue/image';
 import { computed } from 'vue';
 const props = defineProps({
     product: {
@@ -10,14 +11,10 @@ const props = defineProps({
         default: false
     },
     variant: {
-    type: String,
-    default: 'default',
-    validator: value => ['default', 'compact', 'detailed'].includes(value)
-    },
-    status: {
         type: String,
-        default: ''
-    }
+        default: 'default',
+        validator: value => ['default', 'compact', 'detailed'].includes(value)
+    },
 });
 
 const buttons = [
@@ -45,44 +42,51 @@ const buttons = [
 ]
 
 const statusClasses = computed(() => {
-  switch (props.status) {
+    switch (props.product.status) {
     case 'new':
-      return 'bg-red-500';
+        return 'bg-red-500';
     case 'sale':
-      return 'bg-green-500';
+        return 'bg-green-500';
     case 'out-of-stock':
-      return 'bg-gray-500';
+        return 'bg-gray-500';
     default:
-      return '';
-  }
+        return '';
+    }
 });
 
 </script>
 
 <template>
-    <div @click="showDetails" class="card max-w-sm min-h-[350px] overflow-hidden shadow-lg bg-white flex flex-col relative cursor-pointer transition-transform transform rounded-lg" :class="cardScale ? 'hover:scale-105' : ''">
-        <div
-            v-if="props.status"
+    <div @click="showDetails" class="card min-h-[350px] overflow-hidden shadow-lg bg-white flex flex-col relative cursor-pointer transition-transform transform rounded-lg" :class="cardScale ? 'hover:scale-105' : ''">
+        <!-- <div
+            v-if="product.status"
             :class="`absolute z-10 top-0 left-0 m-2 text-white text-xs font-bold px-2 py-1 rounded ${statusClasses}`"
         >
+        ww
             {{ props.status === 'new' ? 'Новинка' : props.status === 'sale' ? 'Скидка' : 'Нет в наличии' }}
-         </div>
-
+        </div> -->
+        <Tag
+            v-if="product.status === 'new'"
+            class="z-40 absolute left-0 top-0 m-2"
+            severity="info"
+            :value="product.status === 'new' ? 'Новинка' : product.status === 'sale' ? 'Скидка' : 'Нет в наличии'">
+        </Tag>
         <div class="relative h-48 bg-gray-200 flex items-center justify-center">
-            <img v-if="product.image" :src="'https://primefaces.org/cdn/primevue/images/product/' + product.image" :alt="product.name">
-            <img v-else class="w-full h-full object-cover" src="https://via.placeholder.com/400x300" alt="Product Image" />
+            <Image class="w-full h-full object-cover" v-if="product.image" :src="'https://primefaces.org/cdn/primevue/images/product/' + product.image" :alt="product.name"/>
+            <!-- <Image v-else class="w-full h-full object-cover" src="https://via.placeholder.com/400x300" alt="Product Image" /> -->
 
             <div class="absolute top-0 right-0 m-2">
                 <i
-                    :class="product.favorite ? 'pi pi-heart-fill text-red-500' : 'pi pi-heart text-gray-500'"
-                    class="text-xl cursor-pointer heart-animation"
+                    :class="product.favorite ? 'pi pi-heart-fill text-red-500' : 'pi pi-heart text-gray-500' "
+                    class="cursor-pointer transition duration-300 hover:scale-125"
+                    style="font-size: 1.5rem"
                     @click.stop="toggleFavorite"
                 ></i>
             </div>
         </div>
 
         <!-- Icons that appear on hover -->
-        <div class="hover-icons absolute z-50 right-0 top-0 bottom-0 flex flex-col justify-center items-center space-y-2 p-2 transform translate-x-full  transition-all duration-300">
+        <!-- <div class="hover-icons absolute z-50 right-0 top-0 bottom-0 flex flex-col justify-center items-center space-y-2 p-2 transform translate-x-full  transition-all duration-300">
             <Button
                 v-for="button in buttons"
                 :icon="`pi ${button.icon}`"
@@ -93,7 +97,7 @@ const statusClasses = computed(() => {
                 :aria-label="button.label"
                 style="background-color: white; color: black;"
             />
-        </div>
+        </div> -->
 
         <div class="px-6 py-4 flex-grow">
             <h3 class="text-lg font-bold text-gray-800">{{ product.name }}</h3>
@@ -112,7 +116,7 @@ const statusClasses = computed(() => {
         </div>
 
         <div class="px-6 py-4 flex items-center">
-            <Button class="flex justify-center rounded h-12" icon="pi pi-shopping-cart"/>
+            <Button class="flex justify-center rounded h-12" icon="pi pi-shopping-cart" outlined/>
             <Button class="flex-grow py-2 px-4 rounded ml-2 h-12" label="Купить сейчас"/>
         </div>
     </div>
