@@ -198,43 +198,6 @@ const isCart = ref(false);
                         :product="item"
                         variant="detailed"
                     />
-                    <div class="border border-surface-200 dark:border-surface-700 rounded m-2 p-4" v-for="product in products">
-                        <div class="mb-4">
-                            <b>{{ product.id }}</b>
-                            <div class="relative mx-auto">
-                                <img :src="'https://primefaces.org/cdn/primevue/images/product/' + product.image" :alt="product.name" class="w-full rounded h-40" />
-                                <div class="dark:bg-surface-900 absolute rounded-border" style="left: 5px; top: 5px">
-                                    <Tag :value="product.inventoryStatus ? product.inventoryStatus.label : ''" :severity="getSeverity(products.inventoryStatus ? products.inventoryStatus : '')" />
-                                </div>
-                            </div>
-                        </div>
-                        <div class="mb-4 font-medium">{{ product.name }}</div>
-                        <div class="flex justify-between items-center">
-                            {{ product.favorite_id }}
-                            {{ product.product_id }}
-                            <div class="mt-0 font-semibold text-xl">{{ product.price }}</div>
-                            <span>
-                                <Button
-                                    :icon="product.favorite ? 'pi pi-heart-fill' : 'pi pi-heart'"
-                                    :severity="product.favorite ? secondary : primary"
-                                    outlined
-                                    @click="product.favorite ? deleteFavoriteProduct(product) : addFavoriteProduct(product)"
-                                />
-                                {{ product.product_id }}
-                                <Button @click="addToCart(product)" :disabled="product.product_id" icon="pi pi-shopping-cart" class="ml-2" />
-                                <div>
-                                    <InputNumber v-model="product.value" readonly inputId="horizontal-buttons" showButtons buttonLayout="horizontal" :step="1">
-                                        <template #incrementbuttonicon>
-                                            <span @click="product.value++" class="pi pi-plus" />
-                                        </template>
-                                        <template #decrementbuttonicon>
-                                            <span @click="product.value--" class="pi pi-minus" />
-                                        </template>
-                                    </InputNumber>
-                                </div>
-                            </span>
-                        </div>
-                    </div>
                 </div>
             </div>
             <div id="features"></div>

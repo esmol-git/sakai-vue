@@ -1,6 +1,4 @@
 <script setup>
-import Image from 'primevue/image';
-import { computed } from 'vue';
 const props = defineProps({
     product: {
         type: Object,
@@ -41,18 +39,25 @@ const buttons = [
     }
 ]
 
-const statusClasses = computed(() => {
-    switch (props.product.status) {
+const getStatusLabel = (status) => {
+    switch (status) {
     case 'new':
-        return 'bg-red-500';
+        return 'success';
     case 'sale':
-        return 'bg-green-500';
+        return 'warn';  
     case 'out-of-stock':
-        return 'bg-gray-500';
+        return 'danger';
     default:
         return '';
     }
-});
+}
+const formatAsPercentage = (value) => {
+  return `${value}%`;
+};
+const calculateDiscountedPrice = (originalPrice, discountPercentage) => {
+  const discountAmount = (originalPrice * discountPercentage) / 100;
+  return originalPrice - discountAmount;
+};
 
 </script>
 
@@ -65,28 +70,29 @@ const statusClasses = computed(() => {
         ww
             {{ props.status === 'new' ? 'Новинка' : props.status === 'sale' ? 'Скидка' : 'Нет в наличии' }}
         </div> -->
-        <Tag
-            v-if="product.status === 'new'"
-            class="z-40 absolute left-0 top-0 m-2"
-            severity="info"
-            :value="product.status === 'new' ? 'Новинка' : product.status === 'sale' ? 'Скидка' : 'Нет в наличии'">
-        </Tag>
-        <div class="relative h-48 bg-gray-200 flex items-center justify-center">
-            <Image class="w-full h-full object-cover" v-if="product.image" :src="'https://primefaces.org/cdn/primevue/images/product/' + product.image" :alt="product.name"/>
-            <!-- <Image v-else class="w-full h-full object-cover" src="https://via.placeholder.com/400x300" alt="Product Image" /> -->
+        <div class="flex flex-grow gap-2 z-40 absolute left-0 top-0 m-2">
+            <Tag
+                :severity="getStatusLabel(product.status)"
+                :value="product.status === 'new' ? 'Новинка' : product.status === 'sale' ? 'Скидка' : 'Нет в наличии'">
+            </Tag>
+            <Tag v-if="product.discountAmount" severity="danger" :value="formatAsPercentage(product.discountAmount)"></Tag>
+        </div>
+        <div class="relative h-60 bg-gray-200 flex items-center justify-center">
+            <img class="w-full h-full object-cover" v-if="product.image && product.image !== 'null'" :src="'https://primefaces.org/cdn/primevue/images/product/' + product.image" :alt="product.name"/>
+            <img v-else class="w-full h-full object-cover" src="https://via.placeholder.com/400x300" alt="Product Image" />
 
-            <div class="absolute top-0 right-0 m-2">
+            <!-- <div class="absolute top-0 right-0 m-2">
                 <i
                     :class="product.favorite ? 'pi pi-heart-fill text-red-500' : 'pi pi-heart text-gray-500' "
                     class="cursor-pointer transition duration-300 hover:scale-125"
                     style="font-size: 1.5rem"
                     @click.stop="toggleFavorite"
                 ></i>
-            </div>
+            </div> -->
         </div>
 
         <!-- Icons that appear on hover -->
-        <!-- <div class="hover-icons absolute z-50 right-0 top-0 bottom-0 flex flex-col justify-center items-center space-y-2 p-2 transform translate-x-full  transition-all duration-300">
+        <div class="hover-icons absolute z-50 right-0 top-0 bottom-0 flex flex-col justify-center items-center space-y-2 p-2 transform translate-x-full  transition-all duration-300">
             <Button
                 v-for="button in buttons"
                 :icon="`pi ${button.icon}`"
@@ -97,14 +103,15 @@ const statusClasses = computed(() => {
                 :aria-label="button.label"
                 style="background-color: white; color: black;"
             />
-        </div> -->
+        </div>
 
         <div class="px-6 py-4 flex-grow">
             <h3 class="text-lg font-bold text-gray-800">{{ product.name }}</h3>
             <p class="text-sm text-gray-600">{{ product.description }}</p>
+            <p>{{ product.category }}</p>
             <div class="flex items-center mt-2">
-                <span class="text-xl font-bold text-gray-800">${{ product.price }}</span>
-                <span class="ml-2 text-sm line-through text-gray-500">$70.00</span>
+                <span v-if="product.price" class="text-xl font-bold text-gray-800">{{calculateDiscountedPrice(product.price, product.discountAmount) || product.price}}</span>
+                <span v-if="product.discountAmount" class="ml-2 text-sm line-through text-gray-500">${{ product.price }}</span>
             </div>
             <div class="flex items-center mt-2">
                 <span v-for="i in 5" :key="i">
