@@ -1,6 +1,9 @@
 <script setup>
 import { addFavorite, addProductCart, delCart, delFavorite, getCart, getFavorites, getProducts, updateProduct } from '@/api/ProductService';
 import { computed, onMounted, ref } from 'vue';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 
 const products = ref(null);
 const name = ref(null);
@@ -14,6 +17,14 @@ function smoothScroll(id) {
     document.body.click();
     document.querySelector(id).scrollIntoView({
         behavior: 'smooth'
+    });
+}
+const showDetails = (id) => {
+    console.log('showDetails', id);
+
+    router.push({
+        name: 'product',
+        params: { id: id }
     });
 }
 function getSeverity(status) {
@@ -148,7 +159,7 @@ const isCart = ref(false);
 
 <template>
     <div class="bg-surface-0 dark:bg-surface-900">
-        <div id="home" class="landing-wrapper overflow-hidden">
+        <div id="home" class="layout-wrapper overflow-hidden">
             <div class="py-6 px-6 mx-0 md:mx-12 lg:mx-20 lg:px-20 flex items-center justify-between relative lg:static">
                 <a class="flex items-center" href="#">
                     <span class="text-surface-900 dark:text-surface-0 font-medium text-2xl leading-normal mr-20">SAKAI</span>
@@ -197,6 +208,11 @@ const isCart = ref(false);
                         :key="item.id"
                         :product="item"
                         variant="detailed"
+                        hoverPanel
+                        @add-to-cart="addToCart"
+                        @add-to-wishlist="item.favorite_id ? deleteFavoriteProduct(item) : addFavoriteProduct(item)"
+                        @update-product="updateProduct(item.id)"
+                        @showDetails="showDetails(item.id)"
                     />
                 </div>
             </div>
@@ -229,11 +245,8 @@ const isCart = ref(false);
                                                 <ul role="list" class="-my-6 divide-y divide-gray-200">
                                                     <li class="flex py-6" v-for="product in cart">
                                                         <div class="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
-                                                            <img
-                                                                src="https://tailwindui.com/plus/img/ecommerce-images/shopping-cart-page-04-product-01.jpg"
-                                                                alt="Salmon orange fabric pouch with match zipper, gray zipper pull, and adjustable hip belt."
-                                                                class="h-full w-full object-cover object-center"
-                                                            />
+                                                            <img class="w-full h-full object-cover" v-if="product.image && product.image !== 'null'" :src="'https://primefaces.org/cdn/primevue/images/product/' + product.image" :alt="product.name"/>
+                                                            <img v-else class="w-full h-full object-cover" src="https://via.placeholder.com/400x300" alt="Product Image" />
                                                         </div>
 
                                                         <div class="ml-4 flex flex-1 flex-col">
