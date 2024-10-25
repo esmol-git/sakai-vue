@@ -1,4 +1,5 @@
 import AppLayout from '@/layout/AppLayout.vue';
+import ShopLayout from '@/layout/shop/ShopLayout.vue';
 import { createRouter, createWebHistory } from 'vue-router';
 
 const router = createRouter({
@@ -141,7 +142,26 @@ const router = createRouter({
             path: '/auth/error',
             name: 'error',
             component: () => import('@/views/pages/auth/Error.vue')
-        }
+        },
+
+        {
+            path: '/shop',
+            component: ShopLayout,
+            children: [
+                {
+                    path: '/shop',
+                    name: 'dashboard',
+                    component: () => import('@/views/shop/Dashboard.vue')
+                },
+                {
+                    path: '/shop/catalog',
+                    name: 'catalog',
+                    component: () => import('@/views/shop/Catalog.vue')
+                }
+            ]
+        },
+
+
     ]
 });
 

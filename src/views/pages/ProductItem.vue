@@ -1,6 +1,5 @@
 <script setup>
 import { updateProduct } from '@/api/ProductService';
-import { PhotoService } from '@/service/PhotoService';
 import { onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
@@ -18,9 +17,7 @@ const fetchProduct = async () => {
     console.error(error);
   }
 };
-
 onMounted(() => {
-    PhotoService.getImages().then((data) => (images.value = data));
     fetchProduct();
 });
 </script>
@@ -28,14 +25,23 @@ onMounted(() => {
 <template>
   <div class="container mx-auto p-4">
     <p @click="router.go(-1)" class="cursor-pointer text-blue-500 mb-4">Назад</p>
-    <Galleria :value="images" :responsiveOptions="responsiveOptions" :numVisible="5" :circular="true" containerStyle="max-width: 640px">
-        <template #item="slotProps">
-            <img :src="slotProps.item.itemImageSrc" :alt="slotProps.item.alt" style="width: 100%; display: block" />
-        </template>
-        <template #thumbnail="slotProps">
-            <img :src="slotProps.item.thumbnailImageSrc" :alt="slotProps.item.alt" style="width: 100%; display: block" />
-        </template>
-    </Galleria>
+    <!-- <Galleria 
+      v-if="product" 
+      :value="Array.isArray(product.images) ? product.images : [product.images]" 
+      :numVisible="5" 
+      :circular="true" 
+      containerStyle="max-width: 600px"
+      thumbnailsPosition="left"
+      >
+      <template #item="slotProps">
+          <img :src="`https://primefaces.org/cdn/primevue/images/product/${slotProps.item}`" :alt="slotProps.item" style="width: 100%; display: block" />
+      </template>
+      <template #thumbnail="slotProps">
+        <div class="grid gap-4 justify-center">
+          <img :src="`https://primefaces.org/cdn/primevue/images/product/${slotProps.item}`" :alt="slotProps.item" style="width: 100%; display: block; max-width: 100px; height: 100px" />
+        </div>
+      </template>
+  </Galleria> -->
     <div v-if="product" class="max-w-sm rounded overflow-hidden shadow-lg bg-white">
         <img class="w-full h-full object-cover" v-if="product.image && product.image !== 'null'" :src="'https://primefaces.org/cdn/primevue/images/product/' + product.image" :alt="product.name"/>
         <img v-else class="w-full h-full object-cover" src="https://via.placeholder.com/400x300" alt="Product Image" />
