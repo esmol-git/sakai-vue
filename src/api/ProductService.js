@@ -56,4 +56,8 @@ const delCart = (id) => {
     return api.delete(`/cart/${id}`);
 };
 
-export { addFavorite, addProductCart, createProduct, delCart, delFavorite, delProduct, getCart, getFavorites, getProduct, getProducts, updateProduct, updatedFavorites };
+const getInfo = () => {
+    return api.get('/main');
+};
+
+export { addFavorite, addProductCart, createProduct, delCart, delFavorite, delProduct, getCart, getFavorites, getProduct, getProducts, updateProduct, updatedFavorites, getInfo };

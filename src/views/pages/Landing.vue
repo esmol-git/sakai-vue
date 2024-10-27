@@ -245,15 +245,16 @@ const isCart = ref(false);
                                                 <ul role="list" class="-my-6 divide-y divide-gray-200">
                                                     <li class="flex py-6" v-for="product in cart">
                                                         <div class="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
-                                                            <img class="w-full h-full object-cover" v-if="product.image && product.image !== 'null'" :src="'https://primefaces.org/cdn/primevue/images/product/' + product.image" :alt="product.name"/>
-                                                            <img v-else class="w-full h-full object-cover" src="https://via.placeholder.com/400x300" alt="Product Image" />
+                                                            222
+                                                            <img class="w-full h-full object-cover" v-if="product.image && product.image !== 'null'" :src="product.image" :alt="product.name"/>
+                                                            <!-- <img v-else class="w-full h-full object-cover" src="https://via.placeholder.com/400x300" alt="Product Image" /> -->
                                                         </div>
 
                                                         <div class="ml-4 flex flex-1 flex-col">
                                                             <div>
                                                                 <div class="flex justify-between text-base font-medium text-gray-900">
                                                                     <h3>
-                                                                        <a href="#">{{ product.name }}</a>
+                                                                        <a href="#">eee{{ product.name }}</a>
                                                                     </h3>
                                                                     <p class="ml-4">{{ product.price }}</p>
                                                                 </div>

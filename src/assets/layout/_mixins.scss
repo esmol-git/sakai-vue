@@ -13,3 +13,7 @@
     outline-offset: -1px;
     box-shadow: inset var(--focus-ring-shadow);
 }
+
+@mixin container() {
+    @apply flex mx-auto max-w-[1240px] px-4 sm:px-6 lg:px-8 flex-auto w-full;
+}

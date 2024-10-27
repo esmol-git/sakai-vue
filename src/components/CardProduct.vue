@@ -116,7 +116,7 @@ const calculateDiscountedPrice = (originalPrice, discountPercentage) => {
             ></i>
         </div>
         <div class="relative h-60 bg-gray-200 flex items-center justify-center">
-            <img class="w-full h-full object-cover" v-if="product.image && product.image !== 'null'" :src="'https://primefaces.org/cdn/primevue/images/product/' + product.image" :alt="product.name"/>
+            <img class="w-full h-full object-contain" v-if="product.image && product.image !== ''" :src="product.image" :alt="product.name"/>
             <img v-else class="w-full h-full object-cover" src="https://via.placeholder.com/400x300" alt="Product Image" />
 
             <div class="absolute top-0 right-0 m-2">
