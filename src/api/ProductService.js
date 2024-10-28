@@ -1,12 +1,13 @@
 import api from './api';
 
-const getProducts = ({ name, category, inventoryStatus, rating, page, limit, sortBy }) => {
+const getProducts = ({ name, category, inventoryStatus, rating, status, page, limit, sortBy }) => {
     return api.get('/products', {
         params: {
             name: name ? '*' + name + '*' : null,
             category,
             'inventoryStatus.value': inventoryStatus,
             rating,
+            status,
             page,
             limit,
             sortBy
@@ -60,4 +61,21 @@ const getInfo = () => {
     return api.get('/main');
 };
 
-export { addFavorite, addProductCart, createProduct, delCart, delFavorite, delProduct, getCart, getFavorites, getProduct, getProducts, updateProduct, updatedFavorites, getInfo };
+const getIntro = () => {
+    return api.get('/intro');
+};
+
+const getCollections = () => {
+    return api.get('/collections');
+};
+
+const getFeatures = () => {
+    return api.get('/features');
+};
+
+const getOffers = () => {
+    return api.get('/offers');
+};
+
+export { addFavorite, addProductCart, createProduct, delCart, delFavorite, delProduct, getCart, getCollections, getFavorites, getFeatures, getInfo, getIntro, getOffers, getProduct, getProducts, updateProduct, updatedFavorites };
+

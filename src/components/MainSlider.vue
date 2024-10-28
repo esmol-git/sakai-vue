@@ -36,11 +36,11 @@ const backgroundImageStyle = (image) => `background-image: url(${image})`
         >
         <template #item="slotProps">
             <div
-                class="flex items-center justify-between"
+                class="flex items-center justify-between pr-12"
                 :style="backgroundStyle(slotProps.data.color)"
             >
                 <div
-                    class="carousel-item__main pl-12"
+                    class="carousel-item__main pl-12 flex-1 flex items-center"
                     :style="backgroundImageStyle(slotProps.data.image)"
                 >
                     <div class="flex flex-col !h-full">
@@ -56,7 +56,13 @@ const backgroundImageStyle = (image) => `background-image: url(${image})`
                         <Button label="Shop Now" class="!text-xl mt-8 !px-4"></Button>
                     </div>
                 </div>
-                <div>123</div>
+                <div class="flex flex-col gap-6">
+                    <div v-for="item in slotProps.data.children" :key="i" class="carousel-item__mini flex flex-col items-center justify-center py-2 px-4 rounded-lg min-w-24">
+                        <img :src="item.image" :alt="item.image" class="w-14 h-14">
+                        <span class="text-[#7AC751] leading-[14px] text-[7px] font-medium">${{ item.price }}</span>
+                        <p class="text-[#555555] text-[10px] font-medium">{{ item.title }}</p>
+                    </div>
+                </div>
             </div>
         </template>
     </Carousel>
@@ -69,11 +75,15 @@ const backgroundImageStyle = (image) => `background-image: url(${image})`
             position: relative;
             max-width: 100% !important;
             &__main {
-                min-height: 500px !important; /* Занимает всю высоту родительского блока */
+                min-height: 500px !important;
                 background-size: 350px;
-                background-position: right 100px center;
+                background-position: right;
                 background-repeat: no-repeat;
                 height: 100%;
+            }
+            &__mini {
+                background: linear-gradient(to bottom, #FFFFFF99, #FFFFFF8F);
+                box-shadow: inset 2px 2px 2px 2px #FFFFFF8F;
             }
         }
         ::v-deep .p-button {

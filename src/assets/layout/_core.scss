@@ -6,7 +6,7 @@ html {
 body {
     font-family: 'Lato', sans-serif;
     color: var(--text-color);
-    background-color: var(--surface-ground);
+    background-color: #fff;
     margin: 0;
     padding: 0;
     min-height: 100%;
@@ -20,4 +20,13 @@ a {
 
 .layout-wrapper {
     min-height: 100vh;
+}
+
+.main__title {
+    font-weight: 700;
+    font-size: 36px;
+    line-height: 45px;
+    color: #555555;
+    text-align: center;
+    margin-bottom: 45px;
 }
