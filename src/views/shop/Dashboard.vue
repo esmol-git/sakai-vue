@@ -2,15 +2,26 @@
 import { getCollections, getFeatures, getIntro, getOffers, getProducts } from '@/api/ProductService';
 import Features from '@/components/Features.vue';
 import Offers from '@/components/Offers.vue';
-import Tranding from '@/components/Tranding.vue';
+import IntroSection from '@/components/sections/IntroSection.vue';
+import ProductsSection from '@/components/sections/ProductsSection.vue';
+import ReviewSection from '@/components/sections/ReviewSection.vue';
+import SpecialOfferSection from '@/components/sections/SpecialOfferSection.vue';
 import { onMounted, ref } from 'vue';
 const slider = ref([]);
 const collections = ref([])
 const features = ref([])
 const offers = ref([])
+const offersSpecial = ref([])
 const products = ref([])
 const tabs = ref(['Top Products', 'New Arrivals', 'Best Sellers', ]);
+const tabs2 = ref(['All Products', 'Best Sellers', 'New Arrivals',
+ 'Todays Details', ]);
 const activeTabIndex = ref(0);
+const activeTabIndex2 = ref(0);
+
+const updateTab2 = (index) => {
+    activeTabIndex2.value = index
+}
 
 const updateTab = (index) => {
     console.log('updateTab', index);
@@ -40,7 +51,8 @@ const fetchFeatures = () => {
 }
 const fetchOffers = () => {
     getOffers().then((data) => {
-        offers.value = data.data
+        offers.value = data.data ? data.data[0].offers : []
+        offersSpecial.value = data.data ? data.data[0].special : []
     })
 }
 const fetchProducts = (status) => {
@@ -53,35 +65,24 @@ onMounted(() => {
     fetchCollections();
     fetchFeatures();
     fetchOffers();
-    fetchProducts('top');
+    fetchProducts();
 });
 
 </script>
 
 <template>
     <div class="intro flex">
-        <div class="intro-collections w-[260px]">
-            <ul class="list-none p-0 m-0 flex flex-col bg-[#F7F8FA] w-[260px] text-[#555555] text-sm divide-y divide-surface">
-                <li class="py-4 px-7 cursor-pointer" v-for="item in collections">
-                    {{ item.name }}
-                </li>
-            </ul>
-        </div>
-        <div class="pl-3 pt-3 flex-auto">
-            <div v-if="slider" class="bg-[#eee] h-full">
-                <main-slider
-                    v-if="slider"
-                    :items="slider"
-                    :showNavigators="false"
-                >
-                </main-slider>
-            </div>
-        </div>
+        <intro-section :menu="collections"></intro-section>
     </div>
     <div>
         <features :items="features"/>
         <offers :items="offers"/>
-        <tranding :tabs="tabs" v-model:activeTabIndex="activeTabIndex" @update:modelValue="updateTab">
+        <products-section 
+            title="Trendings" 
+            :tabs="tabs" 
+            v-model:activeTabIndex="activeTabIndex" 
+            @update:modelValue="updateTab"
+        >
             <template #default="{ activeTabIndex  }">
                 <div v-if="activeTabIndex === 0">
                     <div class="grid grid-cols-4 gap-4">
@@ -118,7 +119,25 @@ onMounted(() => {
                     </div>
                 </div>
             </template>
-        </tranding>
+        </products-section>
+        <SpecialOfferSection title="Special Offer" :items="offersSpecial" />
+        <products-section 
+            :tabs="tabs2" 
+            title="Our Products"
+            v-model:activeTabIndex="activeTabIndex2" 
+            @update:modelValue="updateTab2"
+        >
+            <div class="grid grid-cols-4 gap-4">
+                <CardProduct
+                    v-for="item in products"
+                    :key="item.id"
+                    :product="item"
+                    variant="detailed"
+                    hoverPanel
+                />
+            </div>
+        </products-section>
+        <review-section title="What Our Customer Says" />
     </div>
 </template>
 

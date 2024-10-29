@@ -7,6 +7,10 @@ const props = defineProps({
     activeTabIndex: {
         type: Number,
         default: 0
+    },
+    title: {
+        type: String,
+        default: ''
     }
 })
 
@@ -20,7 +24,7 @@ const updateTab = (index) => {
 
 <template>
     <div class="tranding">
-        <h2 class="main__title">Tranding</h2>
+        <h2 class="main__title">{{ title }}</h2>
         <div class="tabs flex items-center justify-center gap-[70px]">
             <div
                 v-for="(tab, index) in tabs"
