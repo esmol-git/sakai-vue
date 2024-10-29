@@ -1,30 +1,39 @@
 <script setup>
+// Определяем пропсы для компонента
 const props = defineProps({
-  menu: {
-    type: Array,
-  }
-})
+    menu: {
+        type: Array,
+        required: true,
+    },
+    sliderItems: {
+        type: Array,
+    },
+});
+const backgroundStyle = (color) => `background: linear-gradient(to bottom, ${color}, rgb(241, 250, 255))`
+const backgroundImageStyle = (image) => `background-image: url(${image})`
 </script>
 
 <template>
-  <div class="intro">
-    <div class="intro-collections w-[260px]">
-        <ul class="list-none p-0 m-0 flex flex-col bg-[#F7F8FA] w-[260px] text-[#555555] text-sm divide-y divide-surface">
-            <li class="py-4 px-7 cursor-pointer" v-for="item in menu">
-                {{ item.name }}
-            </li>
-        </ul>
-    </div>
-    <div class="pl-3 pt-3 flex-auto">
-            <div v-if="slider" class="bg-[#eee] h-full">
+    <div class="intro flex">
+        <div class="intro-collections w-[260px]">
+            <ul class="list-none p-0 m-0 flex flex-col bg-[#F7F8FA] w-[260px] text-[#555555] text-sm divide-y divide-surface">
+                <li
+                    class="py-4 px-7 cursor-pointer"
+                    v-for="(item, index) in menu"
+                    :key="index"
+                >
+                    {{ item.name }}
+                </li>
+            </ul>
+        </div>
+        <div class="pl-3 pt-3 flex-auto р-х-[500px]">
+            <div class="bg-[#eee] h-full">
                 <main-slider
-                    v-if="slider"
-                    :items="slider"
+                    :items="sliderItems"
                     :showNavigators="false"
                 >
-                <template #item="slotProps">
-                    {{ slotProps }}
-                    <!-- <div
+                    <template #item="slotProps">
+                                            <div
                         class="flex items-center justify-between pr-12"
                         :style="backgroundStyle(slotProps.data.color)"
                     >
@@ -52,14 +61,31 @@ const props = defineProps({
                                 <p class="text-[#555555] text-[10px] font-medium">{{ item.title }}</p>
                             </div>
                         </div>
-                    </div> -->
-                </template>
+                    </div>
+                    </template>
                 </main-slider>
             </div>
         </div>
-  </div>
+    </div>
 </template>
 
 <style lang="scss" scoped>
+.intro {
+  display: flex;
+  height: 500px;
+}
 
+.intro-collections {
+  width: 260px;
+}
+
+.slider-item {
+  text-align: center; /* Центрируем содержимое слайдера */
+  padding: 16px; /* Добавляем отступы */
+}
+
+.slider-item img {
+  border-radius: 8px; /* Закругляем углы изображений */
+}
 </style>
+

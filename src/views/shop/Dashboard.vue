@@ -1,7 +1,8 @@
 <script setup>
-import { getCollections, getFeatures, getIntro, getOffers, getProducts } from '@/api/ProductService';
+import { getArticles, getCollections, getFeatures, getIntro, getOffers, getProducts, getReviews } from '@/api/ProductService';
 import Features from '@/components/Features.vue';
 import Offers from '@/components/Offers.vue';
+import ArticlesSection from '@/components/sections/ArticlesSection.vue';
 import IntroSection from '@/components/sections/IntroSection.vue';
 import ProductsSection from '@/components/sections/ProductsSection.vue';
 import ReviewSection from '@/components/sections/ReviewSection.vue';
@@ -13,9 +14,10 @@ const features = ref([])
 const offers = ref([])
 const offersSpecial = ref([])
 const products = ref([])
+const reviews = ref([])
+const articles = ref([])
 const tabs = ref(['Top Products', 'New Arrivals', 'Best Sellers', ]);
-const tabs2 = ref(['All Products', 'Best Sellers', 'New Arrivals',
- 'Todays Details', ]);
+const tabs2 = ref(['All Products', 'Best Sellers', 'New Arrivals', 'Todays Details', ]);
 const activeTabIndex = ref(0);
 const activeTabIndex2 = ref(0);
 
@@ -60,27 +62,39 @@ const fetchProducts = (status) => {
         products.value = data.data
     })
 }
+const fetchReviews = () => {
+    getReviews().then((data) => {
+        reviews.value = data.data
+    })
+}
+const fetchArticles = () => {
+    getArticles().then((data) => {
+        articles.value = data.data
+    })
+}
 onMounted(() => {
     fetchIntro();
     fetchCollections();
     fetchFeatures();
     fetchOffers();
     fetchProducts();
+    fetchReviews();
+    fetchArticles();
 });
 
 </script>
 
 <template>
     <div class="intro flex">
-        <intro-section :menu="collections"></intro-section>
+        <intro-section :menu="collections" :sliderItems="slider"></intro-section>
     </div>
     <div>
         <features :items="features"/>
         <offers :items="offers"/>
-        <products-section 
-            title="Trendings" 
-            :tabs="tabs" 
-            v-model:activeTabIndex="activeTabIndex" 
+        <products-section
+            title="Trendings"
+            :tabs="tabs"
+            v-model:activeTabIndex="activeTabIndex"
             @update:modelValue="updateTab"
         >
             <template #default="{ activeTabIndex  }">
@@ -121,10 +135,10 @@ onMounted(() => {
             </template>
         </products-section>
         <SpecialOfferSection title="Special Offer" :items="offersSpecial" />
-        <products-section 
-            :tabs="tabs2" 
+        <products-section
+            :tabs="tabs2"
             title="Our Products"
-            v-model:activeTabIndex="activeTabIndex2" 
+            v-model:activeTabIndex="activeTabIndex2"
             @update:modelValue="updateTab2"
         >
             <div class="grid grid-cols-4 gap-4">
@@ -137,7 +151,8 @@ onMounted(() => {
                 />
             </div>
         </products-section>
-        <review-section title="What Our Customer Says" />
+        <review-section title="What Our Customer Says" :items="reviews" />
+        <articles-section title="Our Latest Articles" :items="articles" />
     </div>
 </template>
 

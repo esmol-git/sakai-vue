@@ -16,13 +16,15 @@ const props = defineProps({
         type: Boolean,
         default: true
     },
+    showIndicators: {
+        type: Boolean,
+        default: true
+    },
     circular: {
         type: Boolean,
         default: false
     }
 })
-const backgroundStyle = (color) => `background: linear-gradient(to bottom, ${color}, rgb(241, 250, 255))`
-const backgroundImageStyle = (image) => `background-image: url(${image})`
 </script>
 
 <template>
@@ -31,11 +33,12 @@ const backgroundImageStyle = (image) => `background-image: url(${image})`
         :numVisible="numVisibleItems"
         :numScroll="numScrollItems"
         :showNavigators="showNavigators"
+        :showIndicators="showIndicators"
         :circular="circular"
         class="carousel"
     >
-        <template #item="slotProps">
-            <slot/>
+        <template #item="data">
+            <slot name="item" :data="data.data"></slot>
         </template>
     </Carousel>
 </template>
@@ -46,6 +49,8 @@ const backgroundImageStyle = (image) => `background-image: url(${image})`
         &-item {
             position: relative;
             max-width: 100% !important;
+            width: 500px;
+            background-color: #501212;
             &__main {
                 min-height: 500px !important;
                 background-size: 350px;
@@ -59,8 +64,26 @@ const backgroundImageStyle = (image) => `background-image: url(${image})`
             }
         }
         ::v-deep .p-button {
-            background-color: #7AC751;
-            border-color: #7AC751;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 10;
+            background-color: transparent;
+            border-color: transparent;
+            svg {
+                width: 30px;
+                height: 30px;
+            }
+            &.p-carousel-prev-button {
+                left: 100px;
+            }
+            &.p-carousel-next-button {
+                right: 100px;
+            }
+        }
+
+        ::v-deep .p-button-text:not(:disabled):hover {
+            background-color: transparent;
         }
         ::v-deep .p-carousel-indicator-list {
             position: absolute;
