@@ -82,5 +82,8 @@ const getReviews = () => {
 const getArticles = () => {
     return api.get('/articles');
 }
-export { addFavorite, addProductCart, createProduct, delCart, delFavorite, delProduct, getArticles, getCart, getCollections, getFavorites, getFeatures, getInfo, getIntro, getOffers, getProduct, getProducts, getReviews, updateProduct, updatedFavorites };
+const getPartners = () => {
+    return api.get('/partners');
+}
+export { addFavorite, addProductCart, createProduct, delCart, delFavorite, delProduct, getArticles, getCart, getCollections, getFavorites, getFeatures, getInfo, getIntro, getOffers, getPartners, getProduct, getProducts, getReviews, updateProduct, updatedFavorites };
 

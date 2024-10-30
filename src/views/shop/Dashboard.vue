@@ -1,12 +1,5 @@
 <script setup>
-import { getArticles, getCollections, getFeatures, getIntro, getOffers, getProducts, getReviews } from '@/api/ProductService';
-import Features from '@/components/Features.vue';
-import Offers from '@/components/Offers.vue';
-import ArticlesSection from '@/components/sections/ArticlesSection.vue';
-import IntroSection from '@/components/sections/IntroSection.vue';
-import ProductsSection from '@/components/sections/ProductsSection.vue';
-import ReviewSection from '@/components/sections/ReviewSection.vue';
-import SpecialOfferSection from '@/components/sections/SpecialOfferSection.vue';
+import { getArticles, getCollections, getFeatures, getIntro, getOffers, getPartners, getProducts, getReviews } from '@/api/ProductService';
 import { onMounted, ref } from 'vue';
 const slider = ref([]);
 const collections = ref([])
@@ -14,28 +7,15 @@ const features = ref([])
 const offers = ref([])
 const offersSpecial = ref([])
 const products = ref([])
+const products2 = ref([])
 const reviews = ref([])
 const articles = ref([])
-const tabs = ref(['Top Products', 'New Arrivals', 'Best Sellers', ]);
-const tabs2 = ref(['All Products', 'Best Sellers', 'New Arrivals', 'Todays Details', ]);
+const partners = ref([])
+const tabs = ref(['Top Products', 'New Arrivals', 'Best Sellers']);
+const tabs2 = ref(['All Products', 'Best Sellers', 'New Arrivals', 'Todays Details']);
 const activeTabIndex = ref(0);
 const activeTabIndex2 = ref(0);
 
-const updateTab2 = (index) => {
-    activeTabIndex2.value = index
-}
-
-const updateTab = (index) => {
-    console.log('updateTab', index);
-    activeTabIndex.value = index
-    if (index === 0) {
-        fetchProducts('top')
-    } else if (index === 1) {
-        fetchProducts('new')
-    } else if (index === 2) {
-        fetchProducts('best')
-    }
-}
 const fetchIntro = () => {
     getIntro().then((data) => {
         slider.value = data.data[0].carousel
@@ -62,6 +42,11 @@ const fetchProducts = (status) => {
         products.value = data.data
     })
 }
+const fetchProducts2 = (status) => {
+    getProducts({name: '', status: status}).then((data) => {
+        products2.value = data.data
+    })
+}
 const fetchReviews = () => {
     getReviews().then((data) => {
         reviews.value = data.data
@@ -72,109 +57,78 @@ const fetchArticles = () => {
         articles.value = data.data
     })
 }
+const fetchPartners = () => {
+    getPartners().then((data) => {
+        partners.value = data.data
+    })
+}
+
+const handleTabChange = (index) => {
+    let tabValue;
+    if (index === 0) {
+        tabValue = 'top';
+    } else if (index === 1) {
+        tabValue = 'sale';
+    } else if (index === 2) {
+        tabValue = 'new';
+    }
+    activeTabIndex.value = index;
+    fetchProducts(tabValue);
+}
+const handleTabChange2 = (index) => {
+    let tabValue;
+    if (index === 0) {
+        tabValue = null;
+    } else if (index === 1) {
+        tabValue = 'sale';
+    } else if (index === 2) {
+        tabValue = 'new';
+    } else if (index === 3) {
+        tabValue = 'top';
+    }
+    activeTabIndex2.value = index;
+    fetchProducts2(tabValue);
+}
 onMounted(() => {
     fetchIntro();
     fetchCollections();
     fetchFeatures();
     fetchOffers();
-    fetchProducts();
+    fetchProducts('top');
+    fetchProducts2();
     fetchReviews();
     fetchArticles();
-});
+    fetchPartners();
+})
 
 </script>
 
 <template>
-    <div class="intro flex">
-        <intro-section :menu="collections" :sliderItems="slider"></intro-section>
-    </div>
-    <div>
-        <features :items="features"/>
-        <offers :items="offers"/>
+    <div class="dashboard">
+        <intro-section v-if="slider.length > 0" :menu="collections" :sliderItems="slider"></intro-section>
+        <features-section :items="features"/>
+        <offers-section :items="offers"/>
+        <partners-section title="Partners" :items="partners"></partners-section>
         <products-section
-            title="Trendings"
             :tabs="tabs"
+            title="Our Products"
+            :products="products"
             v-model:activeTabIndex="activeTabIndex"
-            @update:modelValue="updateTab"
-        >
-            <template #default="{ activeTabIndex  }">
-                <div v-if="activeTabIndex === 0">
-                    <div class="grid grid-cols-4 gap-4">
-                        <CardProduct
-                            v-for="item in products"
-                            :key="item.id"
-                            :product="item"
-                            variant="detailed"
-                            hoverPanel
-                        />
-                    </div>
-                    <!-- <div v-if="loading" class="skeleton-card" v-for="n in 4" :key="n"></div> -->
-                </div>
-                <div v-if="activeTabIndex === 1">
-                    <div class="grid grid-cols-4 gap-4">
-                        <CardProduct
-                            v-for="item in products"
-                            :key="item.id"
-                            :product="item"
-                            variant="detailed"
-                            hoverPanel
-                        />
-                    </div>
-                </div>
-                <div v-if="activeTabIndex === 2">
-                    <div class="grid grid-cols-4 gap-4">
-                        <CardProduct
-                            v-for="item in products"
-                            :key="item.id"
-                            :product="item"
-                            variant="detailed"
-                            hoverPanel
-                        />
-                    </div>
-                </div>
-            </template>
-        </products-section>
-        <SpecialOfferSection title="Special Offer" :items="offersSpecial" />
+            @update:modelValue="handleTabChange"
+        />
+        <special-offer-section title="Special Offer" :items="offersSpecial" />
         <products-section
             :tabs="tabs2"
             title="Our Products"
+            :products="products2"
             v-model:activeTabIndex="activeTabIndex2"
-            @update:modelValue="updateTab2"
-        >
-            <div class="grid grid-cols-4 gap-4">
-                <CardProduct
-                    v-for="item in products"
-                    :key="item.id"
-                    :product="item"
-                    variant="detailed"
-                    hoverPanel
-                />
-            </div>
-        </products-section>
+            @update:modelValue="handleTabChange2"
+        />
         <review-section title="What Our Customer Says" :items="reviews" />
         <articles-section title="Our Latest Articles" :items="articles" />
     </div>
 </template>
 
 <style lang="scss">
-.skeleton-card {
-    width: 100%;
-    height: 200px; /* Фиксированная высота для скелетонов */
-    background-color: #e0e0e0; /* Цвет скелетона */
-    margin-bottom: 16px; /* Отступ между скелетонами */
-    border-radius: 4px; /* Закругленные углы */
-    animation: pulse 1.5s infinite; /* Пульсация */
-}
 
-@keyframes pulse {
-    0% {
-        background-color: #e0e0e0;
-    }
-    50% {
-        background-color: #c0c0c0;
-    }
-    100% {
-        background-color: #e0e0e0;
-    }
-}
 </style>

@@ -11,6 +11,10 @@ const props = defineProps({
     title: {
         type: String,
         default: ''
+    },
+    products: {
+        type: Array,
+        required: true
     }
 })
 
@@ -23,7 +27,10 @@ const updateTab = (index) => {
 </script>
 
 <template>
-    <div class="tranding">
+    <div
+        class="tranding"
+        v-animateonscroll="{ enterClass: 'animate-zoomin', leaveClass: 'animate-fadeout' }"
+    >
         <h2 class="main__title">{{ title }}</h2>
         <div class="tabs flex items-center justify-center gap-[70px]">
             <div
@@ -36,7 +43,15 @@ const updateTab = (index) => {
                 {{ tab }}
             </div>
         </div>
-        <slot :activeTabIndex="activeTabIndex"></slot>
+        <div class="grid grid-cols-4 gap-4">
+            <CardProduct
+                v-for="item in products"
+                :key="item.id"
+                :product="item"
+                variant="detailed"
+                hoverPanel
+            />
+        </div>
     </div>
 </template>
 

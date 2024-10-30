@@ -20,6 +20,10 @@ const props = defineProps({
         type: Boolean,
         default: true
     },
+    autoplayInterval: {
+        type: Number,
+        default: 0
+    },
     circular: {
         type: Boolean,
         default: false
@@ -34,6 +38,7 @@ const props = defineProps({
         :numScroll="numScrollItems"
         :showNavigators="showNavigators"
         :showIndicators="showIndicators"
+        :autoplayInterval="autoplayInterval"
         :circular="circular"
         class="carousel"
     >
@@ -46,45 +51,6 @@ const props = defineProps({
 <style lang="scss" scoped>
     .carousel {
         position: relative;
-        &-item {
-            position: relative;
-            max-width: 100% !important;
-            width: 500px;
-            background-color: #501212;
-            &__main {
-                min-height: 500px !important;
-                background-size: 350px;
-                background-position: right;
-                background-repeat: no-repeat;
-                height: 100%;
-            }
-            &__mini {
-                background: linear-gradient(to bottom, #FFFFFF99, #FFFFFF8F);
-                box-shadow: inset 2px 2px 2px 2px #FFFFFF8F;
-            }
-        }
-        ::v-deep .p-button {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            z-index: 10;
-            background-color: transparent;
-            border-color: transparent;
-            svg {
-                width: 30px;
-                height: 30px;
-            }
-            &.p-carousel-prev-button {
-                left: 100px;
-            }
-            &.p-carousel-next-button {
-                right: 100px;
-            }
-        }
-
-        ::v-deep .p-button-text:not(:disabled):hover {
-            background-color: transparent;
-        }
         ::v-deep .p-carousel-indicator-list {
             position: absolute;
             bottom: 10px;

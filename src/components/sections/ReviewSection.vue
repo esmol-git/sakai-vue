@@ -17,6 +17,7 @@ const props = defineProps({
         <main-slider
             :items="items"
             :showIndicators="false"
+            class="review-slider"
         >
             <template #item="slotProps">
                 <div class="review-item">
@@ -79,6 +80,29 @@ const props = defineProps({
                 margin-top: 5px;
                 line-height: 125%;
                 color: #515151;
+            }
+        }
+        &-slider {
+            ::v-deep .p-button {
+                position: absolute;
+                top: 50%;
+                transform: translateY(-50%);
+                z-index: 10;
+                background-color: transparent;
+                border-color: transparent;
+                svg {
+                    width: 30px;
+                    height: 30px;
+                }
+                &.p-carousel-prev-button {
+                    left: 100px;
+                }
+                &.p-carousel-next-button {
+                    right: 100px;
+                }
+            }
+            ::v-deep .p-button-text:not(:disabled):hover {
+                background-color: transparent;
             }
         }
     }

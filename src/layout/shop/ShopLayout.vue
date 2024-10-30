@@ -1,8 +1,11 @@
 <script setup>
 import { getInfo } from '@/api/ProductService';
 import { computed, onMounted, ref } from 'vue';
+import { useRoute } from 'vue-router';
 import ShopFooter from './ShopFooter.vue';
 import ShopHeader from './ShopHeader.vue';
+
+const route = useRoute();
 
 const bagValue = ref(9);
 const messageValue = ref(4);
@@ -29,7 +32,8 @@ onMounted(() => {
 </script>
 
 <template>
-    <div class="shop-wrapper">
+    <ScrollPanel style="height: 100vh">
+        <div class="shop-wrapper">
         <div v-if="!info" class="shop-overlay">
             <ProgressSpinner style="width: 30px; height: 30px" strokeWidth="4" />
         </div>
@@ -74,8 +78,8 @@ onMounted(() => {
                 </template>
                 <template #header-bottom>
                     <div class="flex items-center relative h-16">
-                        <div class="w-[260px]"></div>
-                        <div class="absolute top-0 bottom-0 left-0 w-[260px] !bg-[#7AC751] flex justify-center items-center gap-3 text-white">
+                        <div v-if="route.name === 'shop'" class="w-[260px]"></div>
+                        <div v-if="route.name === 'shop'" class="absolute top-0 bottom-0 left-0 w-[260px] !bg-[#7AC751] flex justify-center items-center gap-3 text-white">
                             <i class="pi pi-align-left" style="font-size: 1.2rem" />
                             <p class="text-base font-medium">ALL COLLECTIONS</p>
                         </div>
@@ -91,6 +95,8 @@ onMounted(() => {
             <shop-footer/>
         </div>
     </div>
+    </ScrollPanel>
+
 </template>
 
 <style lang="scss">

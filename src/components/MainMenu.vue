@@ -32,29 +32,33 @@ function toggleMenu(event) {
 </script>
 
 <template>
-    <div class="hidden sm:-my-px sm:ml-6 sm:flex sm:space-x-8 relative">
+    <div class="hidden sm:-my-px sm:ml-6 sm:flex sm:space-x-8 relative h-full">
         <component
             v-for="item in visibleItems"
             :key="item.label"
             :is="item.isLink === true ? 'a' : 'router-link'"
-            :to="item.isLink === true ? undefined : item.to"
+            :to="item.isLink === true ? undefined : { name: item.to }"
             :href="item.isLink === true ? item.href : undefined"
             :target="item.isLink === true ? item.target || '_blank' : undefined"
             :disabled="item.disabled"
-            class="inline-flex gap-1 items-center border-b-2 border-transparent px-1 pt-1 text-lg font-medium text-gray-500 cursor-pointer"
+            class="inline-flex gap-1 items-center border-b-2 border-transparent px-1 pt-1 text-lg font-medium text-gray-500 cursor-pointer uppercase "
         >
-        <i :class="`pi pi-${item.icon}`" style="font-size: 1.125rem"></i>
+            <i :class="`pi pi-${item.icon}`" style="font-size: 1.125rem"></i>
         {{ item.label }}
         </component>
-        <!-- Компонент меню для оставшихся элементов -->
         <Menu ref="menu" :model="remainingItems" :popup="true" />
-        <div @click.prevent="toggleMenu" class="inline-flex items-center">
-        <i class="pi pi-ellipsis-h cursor-pointer" style="font-size: 1.125rem"></i>
+        <div v-if="remainingItems.length > 0" @click.prevent="toggleMenu" class="inline-flex items-center">
+            <i class="pi pi-ellipsis-h cursor-pointer" style="font-size: 1.125rem"></i>
         </div>
     </div>
 </template>
 
 
 <style lang="scss" scoped>
-
+.router-link-exact-active {
+    @apply border-[#7AC751] text-[#7AC751];
+    &:hover {
+        @apply border-[#7AC751] text-[#7AC751];
+    }
+}
 </style>

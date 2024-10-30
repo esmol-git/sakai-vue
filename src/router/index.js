@@ -150,13 +150,28 @@ const router = createRouter({
             children: [
                 {
                     path: '/shop',
-                    name: 'dashboard',
+                    name: 'shop',
                     component: () => import('@/views/shop/Dashboard.vue')
                 },
                 {
                     path: '/shop/catalog',
                     name: 'catalog',
                     component: () => import('@/views/shop/Catalog.vue')
+                },
+                {
+                    path: '/shop/about',
+                    name: 'about',
+                    component: () => import('@/views/shop/About.vue')
+                },
+                {
+                    path: '/shop/blog',
+                    name: 'blog',
+                    component: () => import('@/views/shop/Blog.vue')
+                },
+                {
+                    path: '/shop/contacts',
+                    name: 'contacts',
+                    component: () => import('@/views/shop/Contacts.vue')
                 }
             ]
         },

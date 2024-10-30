@@ -23,10 +23,5 @@
 </template>
 
 <style lang="scss" scoped>
-.router-link-exact-active {
-  @apply border-indigo-500 text-indigo-600;
-  &:hover {
-    @apply border-indigo-500 text-indigo-600;
-  }
-}
+
 </style>
